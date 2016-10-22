@@ -13,11 +13,24 @@ public class PlayerControl : MonoBehaviour {
         get{ return _nose ?? (_nose = GetComponentInChildren<NoseController> ()); }
     }
 
+    private Animator _animator;
+    public Animator animator {
+        get{ return _animator ?? (_animator = GetComponentInChildren<Animator> ()); }
+    }
+
+    private SpriteRenderer _renderer;
+
+    public SpriteRenderer renderer {
+        get{ return _renderer ?? (_renderer = GetComponentInChildren<SpriteRenderer> ()); }
+    }
+
     public float speed;
+
+    public float health;
 
 	// Use this for initialization
 	void Start () {
-	
+        health = 100;
 	}
 	
 	// Update is called once per frame
@@ -58,5 +71,15 @@ public class PlayerControl : MonoBehaviour {
 
     private void enablerb(){
         rb.isKinematic = false;
+    }
+
+    void OnCollisionEnter2D(Collision2D coll){
+        if (coll.gameObject.layer == LayerMask.NameToLayer ("Obstacles")) { //better way to check type?
+            animator.SetTrigger("tookDamage");
+            iTween.PunchScale (renderer.gameObject, iTween.Hash (
+                "amount", Vector3.one * 0.1f,
+                "time", 0.4f
+            ));
+        }
     }
 }

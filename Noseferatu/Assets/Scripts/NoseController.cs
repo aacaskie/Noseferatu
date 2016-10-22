@@ -6,9 +6,14 @@ public class NoseController : MonoBehaviour {
 
     public GameObject noseSprite;
 
+    private Collider2D _collider;
+    public Collider2D collider {
+        get{ return _collider ?? (_collider = GetComponentInChildren<Collider2D> ()); }
+    }
+
 	// Use this for initialization
-	void Start () {
-	
+	void Awake () {
+        collider.enabled = false;
 	}
 	
 	// Update is called once per frame
@@ -21,6 +26,7 @@ public class NoseController : MonoBehaviour {
     }
 
     public void Extend(Vector2 target){
+        collider.enabled = true;
         Rotate (target);
         //itween shit
         iTween.Stop(noseSprite.gameObject, "retract");
@@ -40,9 +46,14 @@ public class NoseController : MonoBehaviour {
             "name", "retract",
             "x", 0.1f,
             "time", 0.5f,
-            "easetype", "easeOutcubic"
+            "easetype", "easeOutcubic",
+            "oncomplete", "disableCollider",
+            "oncompleteTarget", gameObject
         ));
     }
 
+    private void disableCollider(){
+        collider.enabled = false;
+    }
 
 }
