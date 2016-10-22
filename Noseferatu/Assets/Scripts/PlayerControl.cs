@@ -32,7 +32,7 @@ public class PlayerControl : MonoBehaviour {
             rb.AddForce (Vector2.down * speed);
         }
 
-        if (Input.mousePresent) {
+        if (Input.mousePresent && !rb.isKinematic) {
             nose.Rotate (Camera.main.ScreenToWorldPoint (
                 new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
             ));
@@ -40,10 +40,23 @@ public class PlayerControl : MonoBehaviour {
 
 
         if (Input.GetMouseButtonDown(0)) {
-            nose.Extend (Camera.main.ScreenToWorldPoint (
-                new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
-            ));
-            rb.isKinematic = true;
+
+            if (!rb.isKinematic) {
+                //extend the nose!!!
+                rb.isKinematic = true;
+
+                nose.Extend (
+                    Camera.main.ScreenToWorldPoint ((Vector3)Input.mousePosition));
+
+                Invoke ("enablerb", 0.4f); //time needs to be more than the time it takes nose to extend (itween time)
+            }
+
         }
+
+
 	}
+
+    private void enablerb(){
+        rb.isKinematic = false;
+    }
 }
