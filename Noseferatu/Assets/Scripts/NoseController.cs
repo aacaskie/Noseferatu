@@ -4,9 +4,7 @@ using UnityEngine.Events;
 
 public class NoseController : MonoBehaviour {
 
-    public GameObject noseBase;
-    public GameObject noseMiddle;
-    public GameObject noseTip;
+    public GameObject noseSprite;
 
 	// Use this for initialization
 	void Start () {
@@ -14,9 +12,6 @@ public class NoseController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void LateUpdate () {
-        noseTip.transform.localPosition = noseMiddle.transform.localPosition + new Vector3(noseMiddle.GetComponentInChildren<BoxCollider2D>().bounds.size.x,0,0);
-	}
 
     public void Rotate(Vector2 target){
 //        Vector3 delta = ((Vector3)target - transform.position).normalized;
@@ -28,10 +23,10 @@ public class NoseController : MonoBehaviour {
     public void Extend(Vector2 target){
         Rotate (target);
         //itween shit
-        iTween.Stop(noseMiddle.gameObject, "retract");
-        iTween.ScaleTo (noseMiddle.gameObject, iTween.Hash (
+        iTween.Stop(noseSprite.gameObject, "retract");
+        iTween.ScaleTo (noseSprite.gameObject, iTween.Hash (
             "name", "extend",
-            "x", 2f,
+            "x", 1f,
             "time", 0.3f,
             "easetype", "spring",
             "oncomplete", "retract",
@@ -41,9 +36,9 @@ public class NoseController : MonoBehaviour {
     }
 
     private void retract(){
-        iTween.ScaleTo (noseMiddle.gameObject, iTween.Hash (
+        iTween.ScaleTo (noseSprite.gameObject, iTween.Hash (
             "name", "retract",
-            "x", 0.3f,
+            "x", 0.1f,
             "time", 0.5f,
             "easetype", "easeOutcubic"
         ));
