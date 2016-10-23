@@ -18,34 +18,40 @@ public class PlayerControl : MonoBehaviour {
         get{ return _animator ?? (_animator = GetComponentInChildren<Animator> ()); }
     }
 
-    private SpriteRenderer _renderer;
+    public SpriteRenderer headRenderer;
+    public SpriteRenderer haloRenderer;
 
-    public SpriteRenderer renderer {
-        get{ return _renderer ?? (_renderer = GetComponentInChildren<SpriteRenderer> ()); }
-    }
+    public float Speed;
+    public float Health;
 
-    public float speed;
-
-    public float health;
+    private bool canAttack = true;
 
 	// Use this for initialization
 	void Start () {
-        health = 100;
+        Health = 100;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (Health <= 0) {
+            rb.isKinematic = true;
+            animator.SetTrigger ("dead");
+            return;
+        }
+
+
         if (Camera.main.ScreenToWorldPoint (
             new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
         ).y > transform.position.y) {
             //move up
-            rb.AddForce (Vector2.up * speed);
+            rb.AddForce (Vector2.up * Speed);
         } else {
             //move down
-            rb.AddForce (Vector2.down * speed);
+            rb.AddForce (Vector2.down * Speed);
         }
 
-        if (Input.mousePresent && !rb.isKinematic) {
+        if (Input.mousePresent && canAttack) {
             nose.Rotate (Camera.main.ScreenToWorldPoint (
                 new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
             ));
@@ -54,14 +60,22 @@ public class PlayerControl : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0)) {
 
-            if (!rb.isKinematic) {
+            if (canAttack) {
                 //extend the nose!!!
                 rb.isKinematic = true;
+                canAttack = false;
+
+                iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
+                    "scale", Vector3.zero,
+                    "time", 0.4f,
+                    "easetype", "easeincubic"
+                ));
 
                 nose.Extend (
                     Camera.main.ScreenToWorldPoint ((Vector3)Input.mousePosition));
 
                 Invoke ("enablerb", 0.4f); //time needs to be more than the time it takes nose to extend (itween time)
+                Invoke ("enableAttack", 1.0f);
             }
 
         }
@@ -73,10 +87,21 @@ public class PlayerControl : MonoBehaviour {
         rb.isKinematic = false;
     }
 
+    void enableAttack(){
+        canAttack = true;
+        //tween the halo
+        iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
+            "scale", Vector3.one,
+            "time", 0.2f,
+            "easetype", "spring"
+        ));
+    }
+
     void OnCollisionEnter2D(Collision2D coll){
         if (coll.gameObject.layer == LayerMask.NameToLayer ("Obstacles")) { //better way to check type?
             animator.SetTrigger("tookDamage");
-            iTween.PunchScale (renderer.gameObject, iTween.Hash (
+            Health -= 10;
+            iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
                 "amount", Vector3.one * 0.1f,
                 "time", 0.4f
             ));

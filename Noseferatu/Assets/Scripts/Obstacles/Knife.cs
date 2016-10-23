@@ -12,7 +12,7 @@ public class Knife : Obstacle {
 
 	// Use this for initialization
 	void Start () {
-        rb.AddTorque (200);
+        rb.AddTorque (100);
 	}
 	
 	// Update is called once per frame

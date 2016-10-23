@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 public class NoseController : MonoBehaviour {
 
-    public GameObject noseSprite;
+    public GameObject NoseTipSprite;
 
     private Collider2D _collider;
     public Collider2D collider {
@@ -29,8 +29,8 @@ public class NoseController : MonoBehaviour {
         collider.enabled = true;
         Rotate (target);
         //itween shit
-        iTween.Stop(noseSprite.gameObject, "retract");
-        iTween.ScaleTo (noseSprite.gameObject, iTween.Hash (
+        iTween.Stop(NoseTipSprite.gameObject, "retract");
+        iTween.ScaleTo (NoseTipSprite.gameObject, iTween.Hash (
             "name", "extend",
             "x", 1f,
             "time", 0.3f,
@@ -42,7 +42,7 @@ public class NoseController : MonoBehaviour {
     }
 
     private void retract(){
-        iTween.ScaleTo (noseSprite.gameObject, iTween.Hash (
+        iTween.ScaleTo (NoseTipSprite.gameObject, iTween.Hash (
             "name", "retract",
             "x", 0.1f,
             "time", 0.5f,
