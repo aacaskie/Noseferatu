@@ -7,6 +7,7 @@ public class ObstacleSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        Random.seed = 1234;
         InvokeRepeating ("Spawn", 2, 2.5f);
         InvokeRepeating ("Spawn", 2, 2.5f);
 

@@ -34,8 +34,13 @@ public class Obstacle : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D trigger){
         if (trigger.CompareTag ("nose")) {
-            rb.AddForce (Vector3.right * speed * 2);
-            rb.AddTorque (-100);
+            rb.AddForce (Vector2.right * speed * 3);
+            rb.AddForce ( collider.transform.position.y > trigger.transform.position.y ? 
+                Vector2.up * speed : 
+                Vector2.down * speed
+            );
+            rb.AddTorque (-300);
+            collider.enabled = false;
         }
 
     }
