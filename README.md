@@ -6,4 +6,4 @@ Booger Hell
 
 Sneeze 'em Up
 
-[Imgur](http://i.imgur.com/sGF0skB.gifv)
+![noseferatu nosey!](http://i.imgur.com/sGF0skB.gif)
