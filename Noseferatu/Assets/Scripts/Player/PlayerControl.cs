@@ -22,23 +22,40 @@ public class PlayerControl : MonoBehaviour {
     public SpriteRenderer haloRenderer;
 
     public float Speed;
-    public float Health;
+    public float DamageTaken = 0;
+
+    private float RegenerateTimer = 0;
 
     private bool canAttack = true;
+    private bool canGetHurt = true;
 
 	// Use this for initialization
 	void Start () {
-        Health = 100;
+        DamageTaken = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (Health <= 0) {
+        if (DamageTaken > 2) {
             rb.isKinematic = true;
             animator.SetTrigger ("dead");
             return;
+        } else {
+            RegenerateTimer += Time.deltaTime;
+            if (RegenerateTimer > 20 && DamageTaken > 0) {
+                //HOOORAY ! We regenerated !
+                DamageTaken -= 1;
+                RegenerateTimer = 0;
+                //TODO: Some animation
+                iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
+                    "amount", Vector3.one * 0.05f,
+                    "time", 0.3f
+                ));
+            }
         }
+
+        animator.SetFloat ("Damage", DamageTaken);
 
 
         if (Camera.main.ScreenToWorldPoint (
@@ -97,14 +114,24 @@ public class PlayerControl : MonoBehaviour {
         ));
     }
 
+    void CanGetHurt(){
+        canGetHurt = true;
+    }
+
     void OnCollisionEnter2D(Collision2D coll){
+        if (!canGetHurt)
+            return;
+        
         if (coll.gameObject.layer == LayerMask.NameToLayer ("Obstacles")) { //better way to check type?
             animator.SetTrigger("tookDamage");
-            Health -= 10;
+            DamageTaken += 1;
+            RegenerateTimer = 0;
             iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
                 "amount", Vector3.one * 0.1f,
                 "time", 0.4f
             ));
+            canGetHurt = false;
+            Invoke ("CanGetHurt", 2.0f);
         }
     }
 }

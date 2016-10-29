@@ -13,13 +13,16 @@ public class Obstacle : MonoBehaviour {
         get{ return _rb ?? (_rb = GetComponentInChildren<Rigidbody2D> ()); }
     }
 
-    public float speed;
+    private SpriteRenderer _spriteRenderer;
+    public SpriteRenderer spriteRenderer {
+        get{ return _spriteRenderer ?? (_spriteRenderer = GetComponentInChildren<SpriteRenderer> ()); }
+    }
+        
     public float life;
 
 	// Use this for initialization
-	void Awake () {
+	public void Awake () {
         rb.gravityScale = 0f;
-        rb.AddForce (Vector2.left * speed);
 	}
 	
 	// Update is called once per frame
@@ -34,14 +37,18 @@ public class Obstacle : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D trigger){
         if (trigger.CompareTag ("nose")) {
-            rb.AddForce (Vector2.right * speed * 3);
+
+            //stop the object
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0;
+
+            rb.AddForce (Vector2.right * 100 * 3);
             rb.AddForce ( collider.transform.position.y > trigger.transform.position.y ? 
-                Vector2.up * speed : 
-                Vector2.down * speed
+                Vector2.up * 100 : 
+                Vector2.down * 100
             );
             rb.AddTorque (-300);
             collider.enabled = false;
         }
-
     }
 }

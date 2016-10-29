@@ -3,20 +3,58 @@ using System.Collections;
 
 public class Knife : Obstacle {
 
-    private Animator _animator;
+    void Awake(){
+        base.Awake ();
+        //init pos
+        transform.position = new Vector3(
+            Camera.main.transform.position.x - Camera.main.orthographicSize * Camera.main.aspect * 1.1f,
+            transform.position.y,
+            0
+        );
 
-    public Animator animator {
-        get{ return _animator ?? (_animator = GetComponentInChildren<Animator> ()); }
     }
 
-
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
+        rb.AddForce (Vector2.right * 140);
         rb.AddTorque (100);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        animator.speed = Mathf.Abs(rb.angularVelocity * 0.002f);
-	}
+        Invoke ("push", 2.0f);
+        spriteRenderer.color = Color.black;
+        transform.localScale = transform.localScale * 0.5f;
+        collider.enabled = false;
+
+        spriteRenderer.sortingOrder = -1;
+
+        iTween.ScaleTo (gameObject, iTween.Hash(
+            "scale", transform.localScale * 2,
+            "time", 1f,
+            "delay", 1.6f
+        ));
+
+        iTween.ValueTo (gameObject, iTween.Hash (
+            "from", Color.black,
+            "to", Color.white,
+            "time", 0.2f,
+            "delay", 1.5f,
+            "onUpdate", "updateColor"
+        ));
+
+    }
+
+    // Update is called once per frame
+    void Update () {
+        rb.AddForce (Vector2.left * 60 * Time.deltaTime);
+    }
+
+    void push(){
+        spriteRenderer.sortingOrder = 1;
+
+        rb.AddTorque (200);
+        rb.AddForce (Vector2.left * 200);
+        collider.enabled = true;
+    }
+
+    void updateColor(Color col){
+        spriteRenderer.color = col;
+    }
 }
