@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GarlicCloud: Obstacle {
+public class GarlicCloud : MonoBehaviour {
     
     // Use this for initialization
     void Start () {

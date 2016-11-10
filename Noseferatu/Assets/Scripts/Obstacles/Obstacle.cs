@@ -3,6 +3,11 @@ using System.Collections;
 
 public class Obstacle : MonoBehaviour {
 
+    private ParticleSystem _ExplodeParticles;
+    public ParticleSystem ExplodeParticles {
+        get{ return _ExplodeParticles ?? (_ExplodeParticles = GetComponentInChildren<ParticleSystem> ()); }
+    }
+
     private Collider2D _collider;
     public Collider2D collider {
         get{ return _collider ?? (_collider = GetComponentInChildren<Collider2D> ()); }
@@ -50,5 +55,22 @@ public class Obstacle : MonoBehaviour {
             rb.AddTorque (-300);
             collider.enabled = false;
         }
+    }
+
+    public void ExplodeMe(){
+        //particle system emit?
+        rb.isKinematic = true;
+        collider.enabled = false;
+        Invoke("DestroyMe", 1.0f);
+
+        //Poof teh thing! if possible
+        if (ExplodeParticles != null) {
+            ExplodeParticles.Emit (20);
+        }
+
+    }
+
+    public void DestroyMe(){
+        Destroy (this.gameObject);
     }
 }

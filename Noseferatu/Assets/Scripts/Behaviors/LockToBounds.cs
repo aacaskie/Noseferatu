@@ -17,7 +17,7 @@ public class LockToBounds : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+    void Update () {
         
         Bounds b = Camera.main.OrthographicBounds();
         b.Expand(-Vector3.one * Camera.main.orthographicSize * 0.6f);
@@ -31,7 +31,6 @@ public class LockToBounds : MonoBehaviour {
             Vector2 delta = b.ClosestPoint(transform.position) - transform.position;        
             Vector2 force = delta * pushForce;
             rb.AddForce (force);
-
         }
 	}
 }

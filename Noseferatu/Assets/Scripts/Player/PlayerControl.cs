@@ -3,6 +3,12 @@ using System.Collections;
 
 public class PlayerControl : MonoBehaviour {
 
+    private ParticleSystem _sneezeParticleSystem;
+    public ParticleSystem sneezeParticleSystem
+    {
+        get{ return _sneezeParticleSystem ?? (_sneezeParticleSystem = GetComponentInChildren<ParticleSystem>()); }
+    }
+
     private Rigidbody2D _rb;
     public Rigidbody2D rb {
         get{ return _rb ?? (_rb = GetComponentInChildren<Rigidbody2D> ()); }
@@ -17,12 +23,13 @@ public class PlayerControl : MonoBehaviour {
     public Animator animator {
         get{ return _animator ?? (_animator = GetComponentInChildren<Animator> ()); }
     }
-
     public SpriteRenderer headRenderer;
     public SpriteRenderer haloRenderer;
 
     public float Speed;
     public float DamageTaken = 0;
+
+    public bool Dead = false;
 
     private float RegenerateTimer = 0;
 
@@ -40,6 +47,7 @@ public class PlayerControl : MonoBehaviour {
         if (DamageTaken > 2) {
             rb.isKinematic = true;
             animator.SetTrigger ("dead");
+            Dead = true;
             return;
         } else {
             RegenerateTimer += Time.deltaTime;
@@ -73,38 +81,39 @@ public class PlayerControl : MonoBehaviour {
                 new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
             ));
         }
-
-
-        if (Input.GetMouseButtonDown(0)) {
-
-            if (canAttack) {
-                //extend the nose!!!
-                rb.isKinematic = true;
-                canAttack = false;
-
-                iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
-                    "scale", Vector3.zero,
-                    "time", 0.4f,
-                    "easetype", "easeincubic"
-                ));
-
-                nose.Extend (
-                    Camera.main.ScreenToWorldPoint ((Vector3)Input.mousePosition));
-
-                Invoke ("enablerb", 0.4f); //time needs to be more than the time it takes nose to extend (itween time)
-                Invoke ("enableAttack", 1.0f);
-            }
-
-        }
-
-
 	}
+
+    void Attack(){
+        if (Dead)
+            return;
+        
+        if (canAttack) {
+            //extend the nose!!!
+            rb.isKinematic = true;
+            canAttack = false;
+
+            iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
+                "scale", Vector3.zero,
+                "time", 0.4f,
+                "easetype", "easeincubic"
+            ));
+
+            nose.Extend (
+                Camera.main.ScreenToWorldPoint ((Vector3)Input.mousePosition));
+
+            Invoke ("enablerb", 0.4f); //time needs to be more than the time it takes nose to extend (itween time)
+            Invoke ("enableAttack", 1.0f);
+        }
+    }
 
     private void enablerb(){
         rb.isKinematic = false;
     }
 
     void enableAttack(){
+        if (Dead)
+            return;
+        
         canAttack = true;
         //tween the halo
         iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
@@ -114,7 +123,7 @@ public class PlayerControl : MonoBehaviour {
         ));
     }
 
-    void CanGetHurt(){
+    void CanBeHurtYes(){
         canGetHurt = true;
     }
 
@@ -131,7 +140,50 @@ public class PlayerControl : MonoBehaviour {
                 "time", 0.4f
             ));
             canGetHurt = false;
-            Invoke ("CanGetHurt", 2.0f);
+            Invoke ("CanBeHurtYes", 2.0f);
         }
+    }
+
+    void Sneeze(){
+        if (Dead)
+            return;
+        
+        rb.isKinematic = true;
+        canAttack = false;
+        canGetHurt = false;
+
+        //punch the player sprite scale
+        iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
+            "amount", Vector3.one * 0.1f,
+            "time", 2.4f
+        ));
+
+        //this is repeated from the Attack code.. can we encapsulate it?
+        iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
+            "scale", Vector3.zero,
+            "time", 0.4f,
+            "easetype", "easeincubic"
+        ));
+
+        Invoke ("enablerb", 1.3f);
+        Invoke ("CanBeHurtYes", 1f);
+        Invoke ("enableAttack", 1.3f);
+
+        sneezeParticleSystem.Play ();
+
+        //Make all the obstacles go BOOOOM!
+        InvokeRepeating("KillAllObstacles",0,0.2f);
+        Invoke ("StopKillingAllObstacles",1.3f);
+
+    }
+
+    void KillAllObstacles(){
+        foreach (Obstacle ob in FindObjectsOfType<Obstacle> ()) {
+            ob.ExplodeMe ();
+        }
+    }
+
+    void StopKillingAllObstacles(){
+        CancelInvoke ("KillAllObstacles");
     }
 }
