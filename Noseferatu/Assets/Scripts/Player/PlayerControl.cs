@@ -46,6 +46,7 @@ public class PlayerControl : MonoBehaviour {
 
         if (DamageTaken > 2) {
             rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
             animator.SetTrigger ("dead");
             Dead = true;
             return;
@@ -90,6 +91,7 @@ public class PlayerControl : MonoBehaviour {
         if (canAttack) {
             //extend the nose!!!
             rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
             canAttack = false;
 
             iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
@@ -128,7 +130,7 @@ public class PlayerControl : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D coll){
-        if (!canGetHurt)
+        if (!canGetHurt || Dead)
             return;
         
         if (coll.gameObject.layer == LayerMask.NameToLayer ("Obstacles")) { //better way to check type?
@@ -139,6 +141,12 @@ public class PlayerControl : MonoBehaviour {
                 "amount", Vector3.one * 0.1f,
                 "time", 0.4f
             ));
+
+            iTween.ShakePosition (Camera.main.gameObject, iTween.Hash (
+                "amount", Vector3.one * 0.9f,
+                "time", 0.6f
+            ));
+
             canGetHurt = false;
             Invoke ("CanBeHurtYes", 2.0f);
         }
@@ -149,6 +157,7 @@ public class PlayerControl : MonoBehaviour {
             return;
         
         rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
         canAttack = false;
         canGetHurt = false;
 
