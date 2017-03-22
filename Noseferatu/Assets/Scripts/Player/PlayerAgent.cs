@@ -35,11 +35,12 @@ public class PlayerAgent : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        DialogManager.Instance.StartDialog (new string[]{
-            "Hello!, this is going to be a longer message. Does it towkr?",
-            "Another fucking line of text, and we wonder where we went wrong? It's so obvious. We need to do battle",
-            "I can't believe you would do this to me!!!!"
-        });
+//        DialogManager.Instance.StartDialog (new string[]{
+//            "One message",
+//            "Two message",
+//			"Three message",
+//            "Four"
+//        });
 	}
 	
 	// Update is called once per frame
