@@ -4,6 +4,9 @@ using UnityEngine;
 using Common;
 using System.Linq;
 
+/// <summary>
+/// Singleton for playing sounds during the game
+/// </summary>
 public class SoundManager : Singleton<SoundManager> {
 	
     public AudioBank bank;
@@ -20,6 +23,7 @@ public class SoundManager : Singleton<SoundManager> {
 		int r = Random.Range(0,collection.Count());
 		AudioClip s = collection[r];
 
+		//and play it!
         source.PlayOneShot (s);
     }
 
