@@ -12,5 +12,5 @@ public class AudioBank : ScriptableObject {
 [System.Serializable] 
 public class Sound{
     public string Name;
-    public AudioClip Clip;
+    public AudioCollection Collection;
 }

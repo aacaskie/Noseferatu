@@ -14,7 +14,11 @@ public class SoundManager : Singleton<SoundManager> {
     }
 
     public void PlaySound(string name){
-        AudioClip s = bank.Sounds.Single (x => x.Name == name).Clip;
+
+		//Get random sound from this collection
+		var collection = bank.Sounds.Single (x => x.Name == name).Collection.Clips;
+		int r = Random.Range(0,collection.Count());
+		AudioClip s = collection[r];
 
         source.PlayOneShot (s);
     }
