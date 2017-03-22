@@ -19,9 +19,7 @@ public class NoseController : MonoBehaviour {
 	// Update is called once per frame
 
     public void Rotate(Vector2 target){
-//        Vector3 delta = ((Vector3)target - transform.position).normalized;
-//        float angle = Vector3.Angle (delta, Vector3.right);
-//        Debug.Log ("angle:" + angle.ToString ());
+
         transform.right = ((Vector3)target - transform.position);
     }
 
@@ -46,7 +44,7 @@ public class NoseController : MonoBehaviour {
             "name", "retract",
             "x", 0.1f,
             "time", 0.5f,
-            "easetype", "easeOutcubic",
+            "easetype", "easeInCubic",
             "oncomplete", "disableCollider",
             "oncompleteTarget", gameObject
         ));

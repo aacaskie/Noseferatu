@@ -14,15 +14,18 @@ public class ClickArea : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+    void Update () {
+        if (Time.timeScale != 1)
+            return;
+        
         if (Input.GetMouseButtonDown (0)) {
-            var col = Physics2D.OverlapPoint (Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            if (col == collider) {
-                //Call the sneeze!
-                SendMessageUpwards ("Sneeze");// TRY to sneeze
-            } else {
-                SendMessageUpwards ("Attack"); //TRY to attack
-            }
+            SendMessageUpwards ("Attack"); //TRY to attack
         }
+
+        if (Input.GetMouseButtonDown (1)) {
+            SendMessageUpwards ("Sneeze");// TRY to sneeze
+        }
+             
+
 	}
 }

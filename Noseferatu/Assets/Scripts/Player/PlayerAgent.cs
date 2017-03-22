@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerControl : MonoBehaviour {
+public class PlayerAgent : MonoBehaviour {
 
     private ParticleSystem _sneezeParticleSystem;
     public ParticleSystem sneezeParticleSystem
@@ -27,9 +27,6 @@ public class PlayerControl : MonoBehaviour {
     public SpriteRenderer haloRenderer;
 
     public float Speed;
-    public float DamageTaken = 0;
-
-    public bool Dead = false;
 
     private float RegenerateTimer = 0;
 
@@ -38,35 +35,17 @@ public class PlayerControl : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        DamageTaken = 0;
+        DialogManager.Instance.StartDialog (new string[]{
+            "Hello!, this is going to be a longer message. Does it towkr?",
+            "Another fucking line of text, and we wonder where we went wrong? It's so obvious. We need to do battle",
+            "I can't believe you would do this to me!!!!"
+        });
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
-        if (DamageTaken > 2) {
-            rb.isKinematic = true;
-            rb.velocity = Vector3.zero;
-            animator.SetTrigger ("dead");
-            Dead = true;
-            return;
-        } else {
-            RegenerateTimer += Time.deltaTime;
-            if (RegenerateTimer > 20 && DamageTaken > 0) {
-                //HOOORAY ! We regenerated !
-                DamageTaken -= 1;
-                RegenerateTimer = 0;
-                //TODO: Some animation
-                iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
-                    "amount", Vector3.one * 0.05f,
-                    "time", 0.3f
-                ));
-            }
-        }
-
-        animator.SetFloat ("Damage", DamageTaken);
-
-
+        //MOVEMENT
         if (Camera.main.ScreenToWorldPoint (
             new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
         ).y > transform.position.y) {
@@ -77,35 +56,49 @@ public class PlayerControl : MonoBehaviour {
             rb.AddForce (Vector2.down * Speed);
         }
 
+        //Regenerate loop
+        RegenerateTimer += Time.deltaTime;
+        if (RegenerateTimer > 20 && Game.Instance.PlayerInfo.Health < Game.Instance.PlayerInfo.MaxHealth) {
+            //HOOORAY ! We regenerated !
+            Game.Instance.PlayerInfo.Health += 1;
+            RegenerateTimer = 0;
+            //TODO: Some animation
+            iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
+                "amount", Vector3.one * 0.05f,
+                "time", 0.3f
+            ));
+        }
+            
+        //NOSE DIRECTION
         if (Input.mousePresent && canAttack) {
             nose.Rotate (Camera.main.ScreenToWorldPoint (
                 new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0)
             ));
         }
+
+        //ANIMATOR
+        animator.SetFloat ("Health", Game.Instance.PlayerInfo.Health);
 	}
 
     void Attack(){
-        if (Dead)
-            return;
-        
-        if (canAttack) {
-            //extend the nose!!!
-            rb.isKinematic = true;
-            rb.velocity = Vector3.zero;
-            canAttack = false;
+        if (!canAttack) return;
 
-            iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
-                "scale", Vector3.zero,
-                "time", 0.4f,
-                "easetype", "easeincubic"
-            ));
+        //extend the nose!!!
+        rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
+        canAttack = false;
 
-            nose.Extend (
-                Camera.main.ScreenToWorldPoint ((Vector3)Input.mousePosition));
+        iTween.ScaleTo(haloRenderer.gameObject, iTween.Hash(
+            "scale", Vector3.zero,
+            "time", 0.4f,
+            "easetype", "easeincubic"
+        ));
 
-            Invoke ("enablerb", 0.4f); //time needs to be more than the time it takes nose to extend (itween time)
-            Invoke ("enableAttack", 1.0f);
-        }
+        nose.Extend (
+            Camera.main.ScreenToWorldPoint ((Vector3)Input.mousePosition));
+
+        Invoke ("enablerb", 0.4f); //time needs to be more than the time it takes nose to extend (itween time)
+        Invoke ("enableAttack", 1.0f);
     }
 
     private void enablerb(){
@@ -113,8 +106,6 @@ public class PlayerControl : MonoBehaviour {
     }
 
     void enableAttack(){
-        if (Dead)
-            return;
         
         canAttack = true;
         //tween the halo
@@ -130,32 +121,31 @@ public class PlayerControl : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D coll){
-        if (!canGetHurt || Dead)
+        if (!canGetHurt)
             return;
         
         if (coll.gameObject.layer == LayerMask.NameToLayer ("Obstacles")) { //better way to check type?
             animator.SetTrigger("tookDamage");
-            DamageTaken += 1;
+
+            Game.Instance.PlayerInfo.TakeDamage(1);
+
+            SoundManager.Instance.PlaySound ("PlayerHit");
+
+            Game.Instance.SlowTime (0.6f);
+
             RegenerateTimer = 0;
+
             iTween.PunchScale (headRenderer.gameObject, iTween.Hash (
                 "amount", Vector3.one * 0.1f,
                 "time", 0.4f
             ));
 
-            iTween.ShakePosition (Camera.main.gameObject, iTween.Hash (
-                "amount", Vector3.one * 0.9f,
-                "time", 0.6f
-            ));
-
             canGetHurt = false;
-            Invoke ("CanBeHurtYes", 2.0f);
+            Invoke ("CanBeHurtYes", 1.0f);
         }
     }
 
     void Sneeze(){
-        if (Dead)
-            return;
-        
         rb.isKinematic = true;
         rb.velocity = Vector3.zero;
         canAttack = false;
@@ -188,6 +178,7 @@ public class PlayerControl : MonoBehaviour {
 
     void KillAllObstacles(){
         foreach (Obstacle ob in FindObjectsOfType<Obstacle> ()) {
+            print (ob.name);
             ob.ExplodeMe ();
         }
     }

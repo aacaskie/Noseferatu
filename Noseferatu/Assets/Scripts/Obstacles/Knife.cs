@@ -42,8 +42,24 @@ public class Knife : Obstacle {
     }
 
     // Update is called once per frame
-    void Update () {
-        rb.AddForce (Vector2.left * 60 * Time.deltaTime);
+    void FixedUpdate () {
+        rb.AddForce (Vector2.left * 1.1f);
+    }
+
+    void OnHitNose(){
+        base.PushAway ();
+    }
+
+    void OnHitPlayer(){
+        Instantiate (EffectManager.Instance.SmallExplosion, transform.position, transform.localRotation);
+        collider.enabled = false;
+        rb.AddTorque (100);
+        rb.AddForce (Vector2.left * 100);
+    }
+
+    IEnumerator ClearMe(){
+        yield return new WaitForSeconds (0.05f);
+        Destroy (gameObject);
     }
 
     void push(){
@@ -57,4 +73,5 @@ public class Knife : Obstacle {
     void updateColor(Color col){
         spriteRenderer.color = col;
     }
+
 }

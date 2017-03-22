@@ -22,8 +22,14 @@ public class Garlic : Obstacle {
         rb.AddTorque (30);
 	}
 
-    void OnTriggerEnter2D(Collider2D trigger){
+    void OnHitNose(){
         Instantiate (cloudPrefab, transform.position, Quaternion.identity);
+        Destroy (gameObject);
+    }
+
+    void OnHitPlayer(){
+        Instantiate (cloudPrefab, transform.position, Quaternion.identity);
+        Instantiate (EffectManager.Instance.SmallExplosion, transform.position, transform.localRotation);
         Destroy (gameObject);
     }
 

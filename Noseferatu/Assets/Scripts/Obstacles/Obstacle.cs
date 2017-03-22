@@ -31,7 +31,7 @@ public class Obstacle : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	public void Update () {
 
         //countdown and destroy
         life -= Time.deltaTime;
@@ -42,32 +42,39 @@ public class Obstacle : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D trigger){
         if (trigger.CompareTag ("nose")) {
+            SendMessage ("OnHitNose", trigger);
+        }
 
-            //stop the object
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0;
+    }
 
-            rb.AddForce (Vector2.right * 100 * 3);
-            rb.AddForce ( collider.transform.position.y > trigger.transform.position.y ? 
-                Vector2.up * 100 : 
-                Vector2.down * 100
-            );
-            rb.AddTorque (-300);
-            collider.enabled = false;
+    void OnCollisionEnter2D(Collision2D collision){
+        if (collision.gameObject.CompareTag ("Player")) {
+            SendMessage ("OnHitPlayer", collider);
         }
     }
 
-    public void ExplodeMe(){
-        //particle system emit?
-        rb.isKinematic = true;
-        collider.enabled = false;
-        Invoke("DestroyMe", 1.0f);
+    public void PushAway(Collider2D trigger = null){
+        //stop the object
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0;
 
-        //Poof teh thing! if possible
-        if (ExplodeParticles != null) {
-            ExplodeParticles.Emit (20);
+        rb.AddForce (Vector2.right * 100 * 3);
+
+        if (trigger) {
+            rb.AddForce (collider.transform.position.y > trigger.transform.position.y ? 
+            Vector2.up * 100 : 
+            Vector2.down * 100
+            );
         }
 
+        rb.AddTorque (-300);
+        collider.enabled = false;
+
+        life = 2;
+    }
+
+    public virtual void ExplodeMe(){
+        DestroyMe ();
     }
 
     public void DestroyMe(){

@@ -11,7 +11,7 @@ public class ObstacleSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-        UnityEngine.Random.seed = 1238;
+        UnityEngine.Random.InitState (1238);
         actions = new List<Action> ();
         StartCoroutine ("StartWave");
 	}

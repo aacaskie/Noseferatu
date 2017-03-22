@@ -12,8 +12,8 @@ public class ChefBossController : MonoBehaviour {
         get{ return _animator ?? (_animator = GetComponentInChildren<Animator> ()); }
     }
 
-    private int maxHealth = 100;
-    public int Health;
+    private float maxHealth = 100;
+    public float Health;
 
 	// Use this for initialization
 	void Start () {
@@ -57,17 +57,17 @@ public class ChefBossController : MonoBehaviour {
     IEnumerator AttackSequence(){
         if (Health > maxHealth * 0.65f) {
             //65-100% health
-            (Random.value > 0.75f) ? ChopGarlic() : PepperCloud();
+            if (Random.value > 0.75f) { ChopGarlic(); } else { PepperCloud(); }
 
             yield return new WaitForSeconds(4.0f);
         } else if (Health > maxHealth * 0.45f) {
             //45-65% health
-            (Random.value > 0.5f) ? FriedHeart() : PepperCloud();
+            if (Random.value > 0.5f) { FriedHeart(); } else { ChopGarlic(); }
 
             yield return new WaitForSeconds(4.0f);
         } else if (Health > maxHealth * 0.2f) {
             //1-20% health
-            (Random.value > 0.1f) ? FriedHeart() : PepperCloud();
+            if (Random.value > 0.8f) { FriedHeart(); } else { PepperCloud(); }
 
             yield return new WaitForSeconds(4.0f);
         }
