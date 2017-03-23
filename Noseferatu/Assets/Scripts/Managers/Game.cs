@@ -30,7 +30,6 @@ public class Game : Singleton<Game> {
     }
 
     IEnumerator AlterTime(){
-        print (SoundManager.instance);
         Time.timeScale = 0;
         yield return new WaitForSecondsRealtime (0.14f);
         //if DialogManager.instance...

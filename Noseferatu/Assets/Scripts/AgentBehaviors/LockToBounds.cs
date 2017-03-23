@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Common;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class LockToBounds : MonoBehaviour {

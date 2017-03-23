@@ -74,6 +74,7 @@ public class Obstacle : MonoBehaviour {
     }
 
     public virtual void ExplodeMe(){
+        Instantiate (EffectManager.Instance.SmallExplosion, transform.position, transform.localRotation);
         DestroyMe ();
     }
 

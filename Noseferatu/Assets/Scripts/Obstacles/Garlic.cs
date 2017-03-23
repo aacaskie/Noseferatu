@@ -28,6 +28,7 @@ public class Garlic : Obstacle {
     }
 
     void OnHitPlayer(){
+        SoundManager.Instance.PlaySound ("GarlicHit", 1.2f);
         Instantiate (cloudPrefab, transform.position, Quaternion.identity);
         Instantiate (EffectManager.Instance.SmallExplosion, transform.position, transform.localRotation);
         Destroy (gameObject);

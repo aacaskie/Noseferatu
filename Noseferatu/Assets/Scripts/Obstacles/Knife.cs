@@ -18,7 +18,7 @@ public class Knife : Obstacle {
     void Start () {
         rb.AddForce (Vector2.right * 140);
         rb.AddTorque (100);
-        Invoke ("push", 2.0f);
+        Invoke ("launch", 2.0f);
         spriteRenderer.color = Color.black;
         transform.localScale = transform.localScale * 0.5f;
         collider.enabled = false;
@@ -51,6 +51,8 @@ public class Knife : Obstacle {
     }
 
     void OnHitPlayer(){
+        SoundManager.Instance.PlaySound ("KnifeHit", 1.2f);
+
         Instantiate (EffectManager.Instance.SmallExplosion, transform.position, transform.localRotation);
         collider.enabled = false;
         rb.AddTorque (100);
@@ -62,8 +64,10 @@ public class Knife : Obstacle {
         Destroy (gameObject);
     }
 
-    void push(){
+    void launch(){
         spriteRenderer.sortingOrder = 1;
+
+        SoundManager.Instance.PlaySound ("KnifeLaunch", 2.0f);
 
         rb.AddTorque (200);
         rb.AddForce (Vector2.left * 200);

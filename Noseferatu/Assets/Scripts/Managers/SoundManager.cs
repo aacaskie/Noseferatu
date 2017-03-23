@@ -16,7 +16,7 @@ public class SoundManager : Singleton<SoundManager> {
         get{ return _source ?? (_source = GetComponentInChildren<AudioSource> ()); }
     }
 
-    public void PlaySound(string name){
+    public void PlaySound(string name, float volume = 1f){
 
 		//Get random sound from this collection
 		var collection = bank.Sounds.Single (x => x.Name == name).Collection.Clips;
@@ -24,7 +24,7 @@ public class SoundManager : Singleton<SoundManager> {
 		AudioClip s = collection[r];
 
 		//and play it!
-        source.PlayOneShot (s);
+        source.PlayOneShot (s, volume);
     }
 
 }

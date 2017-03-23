@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DialogBox : MonoBehaviour {
 
@@ -9,6 +10,8 @@ public class DialogBox : MonoBehaviour {
     {
         get{ return _textWriter ?? (_textWriter = GetComponentInChildren<TextWriter>()); }
     }
+
+    public Image FaceImage;
 
 	// Use this for initialization
 	void Start () {

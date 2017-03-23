@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerAgent : MonoBehaviour {
 
@@ -35,12 +36,12 @@ public class PlayerAgent : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-//        DialogManager.Instance.StartDialog (new string[]{
-//            "One message",
-//            "Two message",
-//			"Three message",
-//            "Four"
-//        });
+        //Maybe we'll turn the dialog lists into an asset, too
+        DialogManager.Instance.StartDialog (new List<DialogManager.Message>(){
+            new DialogManager.Message("One message", null),
+            new DialogManager.Message("Two message", null)
+        });
+
 	}
 	
 	// Update is called once per frame
